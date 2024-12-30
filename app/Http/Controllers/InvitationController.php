@@ -34,7 +34,7 @@ class InvitationController extends Controller
         ]);
 
         // Envoyer l'e-mail d'invitation
-        Mail::to($invitation->invitee_email)->send(new \App\Mail\InvitationMail($invitation));
+       // Mail::to($invitation->invitee_email)->send(new \App\Mail\InvitationMail($invitation));
 
         return back()->with('success', 'Invitation envoyée avec succès.');
     }

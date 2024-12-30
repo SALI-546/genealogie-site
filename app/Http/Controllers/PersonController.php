@@ -15,7 +15,7 @@ class PersonController extends Controller
      */
     public function index()
     {
-        // Charger les personnes avec leur créateur
+       
         $people = Person::with('creator')->paginate(10);
         return view('people.index', compact('people'));
     }
@@ -28,16 +28,15 @@ class PersonController extends Controller
      */
     public function show($id)
     {
-        // Charger la personne avec ses enfants et parents
+        
         $person = Person::with(['children', 'parents'])->findOrFail($id);
-         // Définir l'ID de la personne cible (1265 dans ce cas)
+         
     $targetPersonId = 1265;
     
     // Calculer le degré de parenté avec la personne cible
     $degree = $person->getDegreeWith($targetPersonId);
     
-    // Optionnel : Récupérer le chemin de parenté si nécessaire
-    // Vous pouvez modifier la méthode getDegreeWith pour retourner le chemin si besoin
+   
 
     return view('people.show', compact('person', 'degree', 'targetPersonId'));
     }
@@ -70,9 +69,9 @@ class PersonController extends Controller
         ]);
 
         // Formater les données selon les règles spécifiées
-        $validated['created_by'] = Auth::id(); // ID de l'utilisateur authentifié
+        $validated['created_by'] = Auth::id();
 
-        // Première lettre en majuscule, le reste en minuscules
+        
         $validated['first_name'] = ucfirst(strtolower($validated['first_name']));
 
         // Formatage des prénoms du milieu

@@ -6,18 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\ModificationProposalController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
-// Rediriger la racine vers la liste des personnes
+
 Route::get('/', function () {
     return redirect()->route('people.index');
 });

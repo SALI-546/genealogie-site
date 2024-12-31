@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use App\Mail\InvitationMail;
-
+use App\Mail\InvitationMail; 
+use App\Models\User;
+use App\Notifications\InvitationReceived;
 
 class InvitationController extends Controller
 {
@@ -34,7 +35,13 @@ class InvitationController extends Controller
         ]);
 
         // Envoyer l'e-mail d'invitation
-       // Mail::to($invitation->invitee_email)->send(new \App\Mail\InvitationMail($invitation));
+        Mail::to($invitation->invitee_email)->send(new InvitationMail($invitation));
+
+        // Envoyer une notification si l'invité est déjà un utilisateur inscrit
+    $inviteeUser = User::where('email', $invitation->invitee_email)->first();
+    if ($inviteeUser) {
+        $inviteeUser->notify(new InvitationReceived($invitation));
+    }
 
         return back()->with('success', 'Invitation envoyée avec succès.');
     }
@@ -50,7 +57,18 @@ class InvitationController extends Controller
             return redirect()->route('login')->with('error', 'Invitation déjà traitée.');
         }
 
-        // Afficher le formulaire d'inscription pré-rempli avec les informations de la fiche personne
+        // Mettre à jour le statut de l'invitation
+        $invitation->update(['status' => 'accepted']);
+
+        // Rediriger vers le formulaire d'inscription avec les informations pré-remplies
         return view('auth.register', ['invitation' => $invitation]);
     }
+
+    public function createInvitation()
+{
+    // Récupérer les personnes créées par l'utilisateur authentifié
+    $people = Person::where('created_by', Auth::id())->get();
+
+    return view('invitations.send', compact('people'));
+}
 }

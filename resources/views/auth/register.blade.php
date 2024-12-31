@@ -2,6 +2,9 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        @if(isset($invitation))
+        <input type="hidden" name="token" value="{{ $invitation->token }}">
+        @endif
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />

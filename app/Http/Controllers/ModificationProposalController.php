@@ -8,6 +8,10 @@ use App\Models\ModificationHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Person;
+use App\Models\User;
+use App\Notifications\ModificationProposed;
+
 
 class ModificationProposalController extends Controller
 {
@@ -16,6 +20,17 @@ class ModificationProposalController extends Controller
      */
     public function proposeModification(Request $request, $person_id)
     {
+        $this->authorize('propose', ModificationProposal::class); // Limiter à 5 propositions par jour
+        $proposalsToday = ModificationProposal::where('proposer_id', Auth::id())
+            ->whereDate('created_at', today())
+            ->count();
+    
+        if ($proposalsToday >= 5) {
+            return back()->with('error', 'Vous avez atteint la limite de propositions pour aujourd\'hui.');
+        }
+
+
+
         $request->validate([
             'type' => 'required|in:update_person,add_relationship',
             'data' => 'required|json',
@@ -37,6 +52,12 @@ class ModificationProposalController extends Controller
             'comments' => 'Proposition de modification créée.',
         ]);
 
+        // Notifier les membres de la communauté (exemple : tous les utilisateurs)
+    $users = User::all();
+    foreach ($users as $user) {
+        $user->notify(new ModificationProposed($proposal));
+    }
+
         return back()->with('success', 'Proposition de modification soumise avec succès.');
     }
 
@@ -45,6 +66,9 @@ class ModificationProposalController extends Controller
      */
     public function vote(Request $request, $proposal_id)
     {
+        $proposal = ModificationProposal::findOrFail($proposal_id);
+        $this->authorize('vote', $proposal);
+
         $request->validate([
             'vote' => 'required|in:approve,reject',
         ]);
@@ -129,5 +153,25 @@ class ModificationProposalController extends Controller
                 'comments' => 'Proposition exécutée.',
             ]);
         });
+    }
+
+    /**
+     * Afficher le formulaire de proposition de modification.
+     */
+    public function showProposeForm()
+    {
+        $people = Person::all();
+        return view('modifications.propose', compact('people'));
+    }
+
+    /**
+     * Afficher les propositions en attente pour voter.
+     */
+    public function showVoteForm()
+    {
+        // Récupérer les propositions en statut 'pending'
+        $proposals = ModificationProposal::where('status', 'pending')->with('proposer')->get();
+
+        return view('modifications.vote', compact('proposals'));
     }
 }

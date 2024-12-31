@@ -18,7 +18,15 @@
                     <x-nav-link :href="route('people.create')" :active="request()->routeIs('people.create')">
                         {{ __('Ajouter une Personne') }}
                     </x-nav-link>
-                    <!-- Vous pouvez ajouter d'autres liens ici si nécessaire -->
+                    <x-nav-link :href="route('invitations.create')" :active="request()->routeIs('invitations.create')">
+                         {{ __('Envoyer Invitation') }}
+                    </x-nav-link>
+                     <x-nav-link :href="route('proposals.show.form')" :active="request()->routeIs('proposals.show.form')">
+                        {{ __('Proposer une modification') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('proposals.vote.form')" :active="request()->routeIs('proposals.vote.form')">
+                       {{ __('Voter sur les Modifications') }}
+                   </x-nav-link>
                 </div>
             </div>
 
@@ -78,7 +86,15 @@
             <x-responsive-nav-link :href="route('people.create')" :active="request()->routeIs('people.create')">
                 {{ __('Ajouter une Personne') }}
             </x-responsive-nav-link>
-            <!-- Ajouter d'autres liens ici si nécessaire -->
+            <x-responsive-nav-link :href="route('invitations.create')" :active="request()->routeIs('invitations.create')">
+                 {{ __('Envoyer Invitation') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('proposals.show.form')" :active="request()->routeIs('proposals.show.form')">
+                {{ __('Proposer une modification') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('proposals.vote.form')" :active="request()->routeIs('proposals.vote.form')">
+               {{ __('Voter sur les Modifications') }}
+           </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

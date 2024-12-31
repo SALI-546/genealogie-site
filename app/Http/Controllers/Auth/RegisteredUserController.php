@@ -12,15 +12,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Models\Invitation;
 
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+       $invitation = null;
+    if ($request->has('token')) {
+        $invitation = Invitation::where('token', $request->token)->first();
+    }
+    return view('auth.register', ['invitation' => $invitation]);
     }
 
     /**
@@ -35,12 +40,23 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+    $invitation = null;
+    if ($request->has('token')) {
+        $invitation = Invitation::where('token', $request->token)->first();
+    }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        
+    if ($invitation) {
+        $invitation->invitee_user_id = $user->id;
+        $invitation->status = 'completed';
+        $invitation->save();
+    }
+    
 
         event(new Registered($user));
 

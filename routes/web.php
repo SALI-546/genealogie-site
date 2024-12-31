@@ -30,6 +30,7 @@ Route::get('/test-degree', [TestController::class, 'testDegree']);
 
 // Invitations
 Route::middleware(['auth'])->group(function () {
+    Route::get('/invitations/create', [InvitationController::class, 'createInvitation'])->name('invitations.create');
     Route::post('/invitations', [InvitationController::class, 'sendInvitation'])->name('invitations.send');
     Route::get('/invitations/accept/{token}', [InvitationController::class, 'acceptInvitation'])->name('invitations.accept');
 });
@@ -38,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::post('/proposals/{person_id}', [ModificationProposalController::class, 'proposeModification'])->name('proposals.propose');
     Route::post('/proposals/{proposal_id}/vote', [ModificationProposalController::class, 'vote'])->name('proposals.vote');
+    Route::get('/proposals/propose',[ModificationProposalController::class,'showProposeForm'])->name('proposals.show.form');
+    Route::get('/proposals/vote',[ModificationProposalController::class,'showVoteForm'])->name('proposals.vote.form');
 });
 
 
